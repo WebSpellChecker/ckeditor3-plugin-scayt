@@ -1037,4 +1037,4 @@ CKEDITOR.plugins.scayt =
  * @default <code>'suggest|moresuggest|control'</code>
  * @example
  * config.scayt_contextMenuItemsOrder = 'moresuggest|control|suggest';
- */
+ */ 
