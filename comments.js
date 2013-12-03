@@ -13,9 +13,10 @@
  * entries will be listed in the the "More Suggestions" sub-menu.
  * Default value : [scayt_maxSuggestions=5]
  *
- * @property {String} scayt_customerid - Sets the customer ID for SCAYT. Required for migration from free,
+ * @property {String} scayt_customerId - Sets the customer ID for SCAYT. Required for migration from free,
  * ad-supported version to paid, ad-free version.
- * Default value : [scayt_customerid='1:WvF0D4-UtPqN1-43nkD4-NKvUm2-daQqk3-LmNiI-z7Ysb4-mwry24-T8YrS3-Q2tpq2']
+ * Default value : [scayt_customerId='1:WvF0D4-UtPqN1-43nkD4-NKvUm2-daQqk3-LmNiI-z7Ysb4-mwry24-T8YrS3-Q2tpq2']. 
+ * Old option name : scayt_customerid
  *
  * @property {String} scayt_moreSuggestions - Enables/disables the "More Suggestions" sub-menu in the context menu.
  * Possible values are 'on' and 'off'.
@@ -40,9 +41,29 @@
  * separated by a comma (','): 'Options', 'Languages', and 'Dictionary'.
  * Default value : [scayt_uiTabs='1,1,1']
  *
+ * @property {String} scayt_serviceProtocol - Allows to specify protocol for WSC service (ssrv.cgi) full path. Make sense only when you open your page from file system. 
+ * Otherwise SCAYT will try automatically define protocol based on script location
+ * Default value : [scayt_serviceProtocol='http']. 
+ * Old option name : scayt_service_protocol
+ *
+ * @property {String} scayt_serviceHost - Allows to specify host for WSC service (ssrv.cgi) full path. Make sense only when you open your page from file system. 
+ * Otherwise SCAYT will try automatically define host based on script location
+ * Default value : [scayt_serviceHost='svc.webspellchecker.net']. 
+ * Old option name : scayt_service_host
+ *
+ * @property {String} scayt_servicePort - Allows to specify default port for WSC service (ssrv.cgi) full path. If SCAYT willn't define port based on script location
+ * then this value would be taken
+ * Default value : [scayt_servicePort='80']. 
+ * Old option name : scayt_service_port
+ *
+ * @property {String} scayt_servicePath - Allows to specify path for WSC service (ssrv.cgi) full path. Make sense only when you open your page from file system. 
+ * Otherwise SCAYT will try automatically define path based on script location
+ * Default value : [scayt_servicePath='spellcheck31/script/ssrv.cgi']. 
+ * Old option name : scayt_service_path
+ *
  * @property {String} scayt_srcUrl - Sets the URL to SCAYT core. Required to switch to the licensed version of SCAYT application.
  * Further details available at [http://wiki.webspellchecker.net/doku.php?id=migration:hosredfreetolicensedck](http://wiki.webspellchecker.net/doku.php?id=migration:hosredfreetolicensedck)
- * Default value : [scayt_srcUrl = '//svc.webspellchecker.net/scayt26/loader__base.js']
+ * Default value : [scayt_srcUrl = '//svc.webspellchecker.net/spellcheck31/lf/scayt3/ckscayt/ckscayt.js']
  *
  * @property {String} scayt_customDictionaryIds - Links SCAYT to custom dictionaries. This is a string containing dictionary IDs
  * separared by commas (','). 
@@ -60,6 +81,14 @@
  * 'moresuggest' &ndash; more suggestions word list; 
  * 'control' &ndash; SCAYT commands, such as "Ignore" and "Add Word".
  * Default value : [scayt_contextMenuItemsOrder='suggest|moresuggest|control']
+ *
+ * @property {String} scayt_handleCheckDirty - If set to true &ndash; overrides checkDirty functionality of CK to fix SCAYT issues with incorrect checkDirty behavior.
+ * If set to false, provides better performance on big preloaded text
+ * Default value : [scayt_handleCheckDirty=true]
+ *
+ * @property {String} scayt_handleUndoRedo - If set to true &ndash; overrides checkDirty functionality of CK to fix SCAYT issues with incorrect checkDirty behavior.
+ * If set to false, provides better performance on big preloaded text
+ * Default value : [scayt_handleCheckDirty=true]
  *
  * @example
  * config.scayt_autoStartup = true;
@@ -85,6 +114,18 @@
  * // Hides the "Languages" tab.
  * config.scayt_uiTabs = '1,0,1';
  * @example
+ * // define protocol for WSC service (ssrv.cgi) full path
+ * config.scayt_serviceProtocol='https';
+ * @example
+ * // define host for WSC service (ssrv.cgi) full path
+ * config.scayt_serviceHost='my-host';
+ * @example
+ * // define port for WSC service (ssrv.cgi) full path
+ * config.scayt_servicePort='2330';
+ * @example
+ * // define path for WSC service (ssrv.cgi) full path
+ * config.scayt_servicePath='myPath/ssrv.cgi'
+ * @example
  * config.scayt_srcUrl = "http://my-host/spellcheck/lf/scayt/scayt.js";
  * @example
  * config.scayt_customDictionaryIds = '3021,3456,3478"';
@@ -92,4 +133,8 @@
  * config.scayt_userDictionaryName = 'MyDictionary';
  * @example
  * config.scayt_contextMenuItemsOrder = 'moresuggest|control|suggest';
+ * @example
+ * config.scayt_handleCheckDirty = false;
+ * @example
+ * config.scayt_handleUndoRedo = false;
  */
