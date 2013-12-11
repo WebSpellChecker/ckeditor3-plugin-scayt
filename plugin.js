@@ -424,6 +424,7 @@ CKEDITOR.plugins.add('scayt', {
 			htmlFilter = dataProcessor && dataProcessor.htmlFilter,
 			pathFilters = editor._.elementsPath && editor._.elementsPath.filters,
 			dataFilter = dataProcessor && dataProcessor.dataFilter,
+			removeFormatFilter = editor.addRemoveFormatFilter,
 			scaytFilter = function scaytFilter(element) {
 				var plugin = CKEDITOR.plugins.scayt,
 					scaytInstance = plugin.getScayt(editor);
@@ -431,6 +432,14 @@ CKEDITOR.plugins.add('scayt', {
 				if(!scaytInstance) {
 					return element.getName();
 				} else if(element.hasAttribute(plugin.options.data_attribute_name)) {
+					return false;
+				}
+			},
+			removeFormatFilterTemplate = function(element) {
+				var plugin = CKEDITOR.plugins.scayt,
+					scaytInstance = plugin.getScayt(editor);
+				
+				if(scaytInstance && element.hasAttribute(plugin.options.data_attribute_name)) {
 					return false;
 				}
 			};
@@ -455,6 +464,10 @@ CKEDITOR.plugins.add('scayt', {
 			};
 
 			dataFilter.addRules(dataFilterRules);
+		}
+
+		if(removeFormatFilter) {
+			removeFormatFilter.call(editor, removeFormatFilterTemplate);
 		}
 	},
 	scaytMenuDefinition: function(editor) {
