@@ -16,7 +16,7 @@ CKEDITOR.plugins.add('scayt', {
 		CKEDITOR.dialog.add(this.dialogName, CKEDITOR.getUrl(this.path + 'dialogs/options.js'));
 		
 		// Override editor.checkDirty method avoid CK checkDirty functionality to fix SCAYT issues with incorrect checkDirty behavior.
-		if (CKEDITOR.config.scayt_handleCheckDirty === true) {
+		if(CKEDITOR.config.scayt_handleCheckDirty === true) {
 			var editorCheckDirty = CKEDITOR.editor.prototype;
 
 			editorCheckDirty.checkDirty = CKEDITOR.tools.override(editorCheckDirty.checkDirty, function(org) {
@@ -37,7 +37,7 @@ CKEDITOR.plugins.add('scayt', {
 			});
 		}
 
-		if (CKEDITOR.config.scayt_handleUndoRedo === true) {
+		if(CKEDITOR.config.scayt_handleUndoRedo === true) {
 			var undoImagePrototype = CKEDITOR.plugins.undo.Image.prototype;
 			undoImagePrototype.equals = CKEDITOR.tools.override(undoImagePrototype.equals, function(org) {
 				return function(otherImage) {
@@ -231,7 +231,7 @@ CKEDITOR.plugins.add('scayt', {
 		items_order = items_order.split('|');
 
 		if(items_order && items_order.length) {
-			for (var pos = 0 ; pos < items_order.length ; pos++) {
+			for(var pos = 0 ; pos < items_order.length ; pos++) {
 				items_order_str += 'scayt_' + items_order[pos] + (items_order.length != pos + 1 ? ',' : '');
 			}
 		}
@@ -355,7 +355,7 @@ CKEDITOR.plugins.add('scayt', {
 		plugin.state[editor.name] = editor.config.scayt_autoStartup;
 		
 		if(!editor.config.scayt_contextCommands) {
-			editor.config.scayt_contextCommands = 'all';
+			editor.config.scayt_contextCommands = 'ignore|ignoreall|add';
 		}
 
 		if(!editor.config.scayt_sLang) {
@@ -374,7 +374,7 @@ CKEDITOR.plugins.add('scayt', {
 			editor.config.scayt_userDictionaryName = null;
 		}
 
-		if(typeof editor.config.scayt_uiTabs === 'string' && editor.config.scayt_uiTabs.split(',').length === 3){
+		if(typeof editor.config.scayt_uiTabs === 'string' && editor.config.scayt_uiTabs.split(',').length === 3) {
 			editor.config.scayt_uiTabs = editor.config.scayt_uiTabs.split(',');
 		} else {
 			editor.config.scayt_uiTabs = [1,1,1];
@@ -411,11 +411,11 @@ CKEDITOR.plugins.add('scayt', {
 			editor.config.scayt_srcUrl = protocol + '//svc.webspellchecker.net/spellcheck31/lf/scayt3/ckscayt/ckscayt.js';
 		}
 
-		if (typeof CKEDITOR.config.scayt_handleCheckDirty !== 'boolean') {
+		if(typeof CKEDITOR.config.scayt_handleCheckDirty !== 'boolean') {
 			CKEDITOR.config.scayt_handleCheckDirty = true;
 		}
 
-		if (typeof CKEDITOR.config.scayt_handleUndoRedo !== 'boolean') {
+		if(typeof CKEDITOR.config.scayt_handleUndoRedo !== 'boolean') {
 			CKEDITOR.config.scayt_handleUndoRedo = true;
 		}
 	},	
@@ -471,35 +471,35 @@ CKEDITOR.plugins.add('scayt', {
 					scaytInstance.ignoreWord();
 				}
 			},
-			scayt_add: {
-				label : editor.lang.scayt.addWord,
-				group : 'scayt_control',
-				order : 2,
-				exec : function(editor) {
-					var scaytInstance = plugin.getScayt(editor);
-					scaytInstance.addWordToUserDictionary();
-				}
-			},
 			scayt_ignoreall: {
 				label : editor.lang.scayt.ignoreAll,
 				group : 'scayt_control',
-				order : 3,
+				order : 2,
 				exec: function(editor) {
 					var scaytInstance = plugin.getScayt(editor);
 					scaytInstance.ignoreAllWords();
+				}
+			},
+			scayt_add: {
+				label : editor.lang.scayt.addWord,
+				group : 'scayt_control',
+				order : 3,
+				exec : function(editor) {
+					var scaytInstance = plugin.getScayt(editor);
+					scaytInstance.addWordToUserDictionary();
 				}
 			},
 			option:{
 				label : editor.lang.scayt.options,
 				group : 'scayt_control',
 				order : 4,
-				exec: function(editor){
+				exec: function(editor) {
 					var scaytInstance = plugin.getScayt(editor);
 
 					scaytInstance.tabToOpen = 'options';
 					editor.openDialog(self.dialogName);
 				},
-				verification: function(editor){
+				verification: function(editor) {
 					return (editor.config.scayt_uiTabs[0] == 1) ? true : false;
 				}
 			},
@@ -507,13 +507,13 @@ CKEDITOR.plugins.add('scayt', {
 				label : editor.lang.scayt.languagesTab,
 				group : 'scayt_control',
 				order : 5,
-				exec: function(editor){
+				exec: function(editor) {
 					var scaytInstance = plugin.getScayt(editor);
 
 					scaytInstance.tabToOpen = 'langs';
 					editor.openDialog(self.dialogName);
 				},
-				verification: function(editor){
+				verification: function(editor) {
 					return (editor.config.scayt_uiTabs[1] == 1) ? true : false;
 				}
 			},
@@ -521,13 +521,13 @@ CKEDITOR.plugins.add('scayt', {
 				label : editor.lang.scayt.dictionariesTab,
 				group : 'scayt_control',
 				order : 6,
-				exec: function(editor){
+				exec: function(editor) {
 					var scaytInstance = plugin.getScayt(editor);
 
 					scaytInstance.tabToOpen = 'dictionaries';
 					editor.openDialog(self.dialogName);
 				},
-				verification: function(editor){
+				verification: function(editor) {
 					return (editor.config.scayt_uiTabs[2] == 1) ? true : false;
 				}
 			},
@@ -535,7 +535,7 @@ CKEDITOR.plugins.add('scayt', {
 				label : editor.lang.scayt.aboutTab,
 				group : 'scayt_control',
 				order : 7,
-				exec: function(editor){
+				exec: function(editor) {
 					var scaytInstance = plugin.getScayt(editor);
 
 					scaytInstance.tabToOpen = 'about';
@@ -550,7 +550,7 @@ CKEDITOR.plugins.add('scayt', {
 			subItemList = {};
 		
 		if(suggestions.length > 0 && suggestions[0] !== 'no_any_suggestions') {
-			for (var i = 0; i < suggestions.length; i++) {
+			for(var i = 0; i < suggestions.length; i++) {
 				
 				var commandName = 'scayt_suggest_' + CKEDITOR.plugins.scayt.suggestions[i].replace(' ', '_');
 				editor.addCommand(commandName, self.createCommand(CKEDITOR.plugins.scayt.suggestions[i]));
@@ -629,10 +629,10 @@ CKEDITOR.plugins.add('scayt', {
 				continue;
 			}
 
-			if(typeof menuItem[key].verification === 'function') {
-				itemList[key] = (menuItem[key].verification(editor)) ? CKEDITOR.TRISTATE_OFF : CKEDITOR.TRISTATE_DISABLED;
-			} else {
-				itemList[key] = CKEDITOR.TRISTATE_OFF;
+			itemList[key] = CKEDITOR.TRISTATE_OFF;
+			// delete item from context menu if its state isn't verified as allowed
+			if(typeof menuItem[key].verification === 'function' && !menuItem[key].verification(editor)) {
+				delete itemList[key];
 			}
 			
 			editor.addCommand(key, {
