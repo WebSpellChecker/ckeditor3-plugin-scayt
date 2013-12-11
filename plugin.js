@@ -690,32 +690,32 @@ CKEDITOR.plugins.scayt = {
 	createScayt: function(editor) {
 		var self = this;
 
-		this.loadScaytLibrary(editor, function() {
+		this.loadScaytLibrary(editor, function(_editor) {
 			var _scaytInstanceOptions = {
 				debug 				: false,
-				lang 				: editor.config.scayt_sLang,
-				container 			: editor.document.getWindow().$.frameElement,
-				customDictionary	: editor.config.scayt_customDictionaryIds,
-				userDictionaryName 	: editor.config.scayt_userDictionaryName,
-				localization		: editor.langCode,
-				customer_id			: editor.config.scayt_customerId,
+				lang 				: _editor.config.scayt_sLang,
+				container 			: _editor.document.getWindow().$.frameElement,
+				customDictionary	: _editor.config.scayt_customDictionaryIds,
+				userDictionaryName 	: _editor.config.scayt_userDictionaryName,
+				localization		: _editor.langCode,
+				customer_id			: _editor.config.scayt_customerId,
 				data_attribute_name : self.options.data_attribute_name
 			};
 
-			if(editor.config.scayt_serviceProtocol) {
-				_scaytInstanceOptions['service_protocol'] = editor.config.scayt_serviceProtocol;
+			if(_editor.config.scayt_serviceProtocol) {
+				_scaytInstanceOptions['service_protocol'] = _editor.config.scayt_serviceProtocol;
 			}
 
-			if(editor.config.scayt_serviceHost) {
-				_scaytInstanceOptions['service_host'] = editor.config.scayt_serviceHost;
+			if(_editor.config.scayt_serviceHost) {
+				_scaytInstanceOptions['service_host'] = _editor.config.scayt_serviceHost;
 			}
 
-			if(editor.config.scayt_servicePort) {
-				_scaytInstanceOptions['service_port'] = editor.config.scayt_servicePort;
+			if(_editor.config.scayt_servicePort) {
+				_scaytInstanceOptions['service_port'] = _editor.config.scayt_servicePort;
 			}
 
-			if(editor.config.scayt_servicePath) {
-				_scaytInstanceOptions['service_path'] = editor.config.scayt_servicePath;
+			if(_editor.config.scayt_servicePath) {
+				_scaytInstanceOptions['service_path'] = _editor.config.scayt_servicePath;
 			}
 
 			var _scaytInstance = new SCAYT.CKSCAYT(_scaytInstanceOptions, function() {
@@ -724,13 +724,12 @@ CKEDITOR.plugins.scayt = {
 				// error callback
 			});
 
-			//_scaytInstance.enabled = !_scaytInstance.enabled || true;
 			_scaytInstance.subscribe('suggestionListSend', function(data) {
 				// TODO: maybe store suggestions for specific editor 
 				CKEDITOR.plugins.scayt.suggestions = data.suggestionList;
 			});
 
-			self.instances[editor.name] = _scaytInstance;
+			self.instances[_editor.name] = _scaytInstance;
 		});
 	},
 	destroy: function(editor) {
