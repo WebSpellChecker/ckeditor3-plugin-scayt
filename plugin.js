@@ -74,11 +74,13 @@ CKEDITOR.plugins.add('scayt', {
 			className : 'cke_button_scayt',
 			modes : {wysiwyg: 1},
 			onRender: function() {
-				//command.on('state', function()
-				//{
-				//	this.setState(command.state);
-				//},
-				//this);
+				var that = this;
+
+				editor.on('scaytButtonState', function(ev) {
+					if(ev.data === CKEDITOR.TRISTATE_ON || ev.data === CKEDITOR.TRISTATE_OFF) {
+						that.setState(ev.data);
+					}
+				});
 			},
 			onMenu : function() {
 				var scaytInstance = CKEDITOR.plugins.scayt.getScayt(editor);
@@ -743,6 +745,7 @@ CKEDITOR.plugins.scayt = {
 			});
 
 			self.instances[_editor.name] = _scaytInstance;
+			_editor.fire('scaytButtonState', CKEDITOR.TRISTATE_ON);
 		});
 	},
 	destroy: function(editor) {
@@ -754,6 +757,7 @@ CKEDITOR.plugins.scayt = {
 		}
 
 		delete this.instances[editor.name];
+		editor.fire('scaytButtonState', CKEDITOR.TRISTATE_OFF);
 	},
 	getScayt : function(editor) {
 		return this.instances[editor.name];
