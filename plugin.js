@@ -75,11 +75,18 @@ CKEDITOR.plugins.add('scayt', {
 			modes : {wysiwyg: 1},
 			onRender: function() {
 				var that = this;
+				var _editor = editor;
+				var isLtIE10 = CKEDITOR.env.ie && CKEDITOR.env.version < 10;
 
-				editor.on('scaytButtonState', function(ev) {
-					if(ev.data === CKEDITOR.TRISTATE_ON || ev.data === CKEDITOR.TRISTATE_OFF) {
-						that.setState(ev.data);
-					}
+				_editor.on('scaytButtonState', function(ev) {
+					var _ev = ev;
+
+					// bug in IE 8, 9 - state was not applied on scayt autostartup
+					setTimeout(function() {
+						if(typeof _ev.data != undefined) {
+							that.setState(_ev.data);
+						}
+					}, isLtIE10 ? 500 : 50);
 				});
 			},
 			onMenu : function() {
@@ -254,9 +261,17 @@ CKEDITOR.plugins.add('scayt', {
 		});
 
 		editor.on('contentDom', function(ev) {
-			// The event are fired when editable iframe node was reinited so we should restart our service
-			if(plugin.state[editor.name] === true) {
+			// The event is fired when editable iframe node was reinited so we should restart our service
+			if(plugin.state[editor.name] === true && editor.readOnly === false) {
 				plugin.createScayt(editor);
+			}
+		});
+
+		editor.on('destroy', function(ev) {
+			var scaytInstance = plugin.getScayt(editor);
+
+			if(scaytInstance) {
+				plugin.destroy(editor);
 			}
 		});
 
@@ -268,6 +283,7 @@ CKEDITOR.plugins.add('scayt', {
 				scaytInstance = plugin.getScayt(editor);
 				if(scaytInstance) {
 					plugin.destroy(editor);
+					editor.fire('scaytButtonState', CKEDITOR.TRISTATE_DISABLED);
 				}
 			} else if(ev.data.name === 'bold' || ev.data.name === 'italic' || ev.data.name === 'underline' || ev.data.name === 'strike' || ev.data.name === 'subscript' || ev.data.name === 'superscript') {
 				scaytInstance = plugin.getScayt(editor);
@@ -291,14 +307,6 @@ CKEDITOR.plugins.add('scayt', {
 			}
 		});
 		 
-		editor.on('destroy', function(ev) {
-			var scaytInstance = plugin.getScayt(editor);
-
-			if(scaytInstance) {
-				plugin.destroy(editor);
-			}
-		});
-
 		//#9439 after SetData method fires contentDom event and SCAYT create additional instanse
 		// This way we should destroy SCAYT on setData event when contenteditable Iframe was re-created
 		editor.on('setData', function() {
@@ -748,7 +756,7 @@ CKEDITOR.plugins.scayt = {
 			});
 
 			self.instances[_editor.name] = _scaytInstance;
-			_editor.fire('scaytButtonState', CKEDITOR.TRISTATE_ON);
+			_editor.fire('scaytButtonState', _editor.readOnly ? CKEDITOR.TRISTATE_DISABLED : CKEDITOR.TRISTATE_ON);
 		});
 	},
 	destroy: function(editor) {
@@ -764,9 +772,6 @@ CKEDITOR.plugins.scayt = {
 	},
 	getScayt : function(editor) {
 		return this.instances[editor.name];
-	},
-	getLanguages: function() {
-		var scayt_instance = this.getScayt(editor);
 	},
 	loadScaytLibrary: function(editor, callback) {
 		var self = this;
