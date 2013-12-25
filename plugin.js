@@ -439,11 +439,14 @@ CKEDITOR.plugins.add('scayt', {
 			},
 			removeFormatFilterTemplate = function(element) {
 				var plugin = CKEDITOR.plugins.scayt,
-					scaytInstance = plugin.getScayt(editor);
+					scaytInstance = plugin.getScayt(editor),
+					result = true;
 				
 				if(scaytInstance && element.hasAttribute(plugin.options.data_attribute_name)) {
-					return false;
+					result = false;
 				}
+
+				return result;
 			};
 
 		if(pathFilters) {
