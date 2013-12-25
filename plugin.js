@@ -14,54 +14,6 @@ CKEDITOR.plugins.add('scayt', {
 
 		// source mode
 		CKEDITOR.dialog.add(this.dialogName, CKEDITOR.getUrl(this.path + 'dialogs/options.js'));
-		
-		// Override editor.checkDirty method avoid CK checkDirty functionality to fix SCAYT issues with incorrect checkDirty behavior.
-		if(CKEDITOR.config.scayt_handleCheckDirty === true) {
-			var editorCheckDirty = CKEDITOR.editor.prototype;
-
-			editorCheckDirty.checkDirty = CKEDITOR.tools.override(editorCheckDirty.checkDirty, function(org) {
-				return function() {
-					var retval = null,
-						scaytInstance = plugin.getScayt(editor);
-
-					if(!scaytInstance || plugin.state[editor.name] === false) {
-						retval = org.apply(this);
-					} else {
-						var currentData = scaytInstance.removeMarkupFromString(editor.getSnapshot());//.replace(/&nbsp;/g, ' ');
-						var prevData = scaytInstance.removeMarkupFromString(editor._.previousValue);//.replace(/&nbsp;/g, ' ');
-
-						retval = (editor.mayBeDirty && currentData !== prevData);
-					}
-					return retval;
-				};
-			});
-		}
-
-		if(CKEDITOR.config.scayt_handleUndoRedo === true) {
-			var undoImagePrototype = CKEDITOR.plugins.undo.Image.prototype;
-			undoImagePrototype.equals = CKEDITOR.tools.override(undoImagePrototype.equals, function(org) {
-				return function(otherImage) {
-					var scaytInstance = plugin.getScayt(this.editor);
-
-					var thisContents = this.contents,
-						otherContents = otherImage.contents;
-					
-					// Making the comparison based on content without SCAYT word markers.
-					if(scaytInstance) {
-						// scayt::reset might return value undefined. (#5742)
-						this.contents = scaytInstance.removeMarkupFromString(thisContents) || '';
-						otherImage.contents = scaytInstance.removeMarkupFromString(otherContents) || '';
-					} 
-					//console.log(arguments);
-					var retval = org.apply(this, arguments);
-
-					this.contents = thisContents;
-					otherImage.contents = otherContents;
-
-					return retval;
-				};
-			});
-		}
 		// end source mode
 
 		this.addMenuItems(editor);
@@ -599,19 +551,19 @@ CKEDITOR.plugins.add('scayt', {
 						order: i + 1
 					});
 					subItemList[commandName] = CKEDITOR.TRISTATE_OFF;
-				}
 
-				if(editor.config.scayt_moreSuggestions === 'on') {
-					editor.addMenuItem('scayt_moresuggest', {
-						label : editor.lang.scayt.moreSuggestions,
-						group : 'scayt_moresuggest',
-						order : 10,
-						getItems : function() {
-							return subItemList;
-						}
-					});
-				
-					itemList['scayt_moresuggest'] = CKEDITOR.TRISTATE_OFF;
+					if(editor.config.scayt_moreSuggestions === 'on') {
+						editor.addMenuItem('scayt_moresuggest', {
+							label : editor.lang.scayt.moreSuggestions,
+							group : 'scayt_moresuggest',
+							order : 10,
+							getItems : function() {
+								return subItemList;
+							}
+						});
+					
+						itemList['scayt_moresuggest'] = CKEDITOR.TRISTATE_OFF;
+					}
 				}
 			}
 		} else {
@@ -689,7 +641,10 @@ CKEDITOR.plugins.scayt = {
 	state: {},
 	instances : {},
 	suggestions: [],
-	isLoadingStarted: false,
+	loadingHelper: {
+		loadOrder: []
+	},
+	isLoading: false,
 	options: {
 		disablingCommandExec: {
 			source: true,
@@ -718,7 +673,6 @@ CKEDITOR.plugins.scayt = {
 
 		this.loadScaytLibrary(editor, function(_editor) {
 			var _scaytInstanceOptions = {
-				debug 				: false,
 				lang 				: _editor.config.scayt_sLang,
 				container 			: _editor.document.getWindow().$.frameElement,
 				customDictionary	: _editor.config.scayt_customDictionaryIds,
@@ -776,23 +730,86 @@ CKEDITOR.plugins.scayt = {
 	loadScaytLibrary: function(editor, callback) {
 		var self = this;
 		
-		if(!this.isLoadingStarted && (typeof window.SCAYT === 'undefined' || typeof window.SCAYT.CKSCAYT !== 'function')) {
-			this.isLoadingStarted = true;
-			CKEDITOR.scriptLoader.load(editor.config.scayt_srcUrl, function(success) {
-				CKEDITOR.fire('scaytReady');
+		if(typeof window.SCAYT === 'undefined' || typeof window.SCAYT.CKSCAYT !== 'function') {
+			// add onLoad callbacks for editors while SCAYT is loading
+			this.loadingHelper[editor.name] = callback;
+			this.loadingHelper.loadOrder.push(editor.name);
 
-				for(var editorName in self.state) {
-					if(self.state[editorName] === true) {
-						if(typeof callback === 'function') {
-							callback(CKEDITOR.instances[editorName]);
-						}
+			CKEDITOR.scriptLoader.load(editor.config.scayt_srcUrl, function(success) {
+				var editorName;
+
+				CKEDITOR.fireOnce('scaytReady');
+
+				for(var i = 0; i < self.loadingHelper.loadOrder.length; i++) {
+					editorName = self.loadingHelper.loadOrder[i];
+
+					if(typeof self.loadingHelper[editorName] === 'function') {
+						self.loadingHelper[editorName](CKEDITOR.instances[editorName]);
 					}
+
+					delete self.loadingHelper[editorName];
 				}
+				self.loadingHelper.loadOrder = [];
 			});
 		} else if(window.SCAYT && typeof window.SCAYT.CKSCAYT === 'function') {
-			if(typeof callback === 'function') {
-				callback(editor);
+			CKEDITOR.fireOnce('scaytReady');
+
+			if(!self.getScayt(CKEDITOR.instances[editor.name])) {
+				if(typeof callback === 'function') {
+					callback(editor);
+				}
 			}
 		}
 	}
 };
+
+CKEDITOR.on('scaytReady', function() {
+	// Override editor.checkDirty method avoid CK checkDirty functionality to fix SCAYT issues with incorrect checkDirty behavior.
+	if(CKEDITOR.config.scayt_handleCheckDirty === true) {
+		var editorCheckDirty = CKEDITOR.editor.prototype;
+
+		editorCheckDirty.checkDirty = CKEDITOR.tools.override(editorCheckDirty.checkDirty, function(org) {
+			return function() {
+				var retval = null,
+					plugin = CKEDITOR.plugins.scayt,
+					scaytInstance = plugin.getScayt(this);
+
+				if(!scaytInstance || plugin.state[this.name] === false) {
+					retval = org.apply(this);
+				} else {
+					var currentData = scaytInstance.removeMarkupFromString(this.getSnapshot());//.replace(/&nbsp;/g, ' ');
+					var prevData = scaytInstance.removeMarkupFromString(this._.previousValue);//.replace(/&nbsp;/g, ' ');
+
+					retval = (this.mayBeDirty && currentData !== prevData);
+				}
+				return retval;
+			};
+		});
+	}
+
+	if(CKEDITOR.config.scayt_handleUndoRedo === true) {
+		var undoImagePrototype = CKEDITOR.plugins.undo.Image.prototype;
+		undoImagePrototype.equals = CKEDITOR.tools.override(undoImagePrototype.equals, function(org) {
+			return function(otherImage) {
+				var plugin = CKEDITOR.plugins.scayt,
+					scaytInstance = plugin.getScayt(this.editor),
+					thisContents = this.contents,
+					otherContents = otherImage.contents;
+				
+				// Making the comparison based on content without SCAYT word markers.
+				if(scaytInstance) {
+					// scayt::reset might return value undefined. (#5742)
+					this.contents = scaytInstance.removeMarkupFromString(thisContents) || '';
+					otherImage.contents = scaytInstance.removeMarkupFromString(otherContents) || '';
+				} 
+				//console.log(arguments);
+				var retval = org.apply(this, arguments);
+
+				this.contents = thisContents;
+				otherImage.contents = otherContents;
+
+				return retval;
+			};
+		});
+	}
+});
