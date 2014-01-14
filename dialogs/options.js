@@ -313,6 +313,56 @@ CKEDITOR.dialog.add( 'scaytcheck', function( editor )
 
 		// user dictionary handlers
 		var dic = {};
+		var udActions = {
+			createUD: function(dname) {
+				// comma separated button's ids include repeats if exists
+				var all_buttons = dic_buttons[0] + ',' + dic_buttons[1];
+
+				var err_massage = captions["err_dic_create"];
+				var suc_massage = captions["succ_dic_create"];
+
+				hide_dic_buttons ( all_buttons );
+				display_dic_buttons ( dic_buttons[1] );
+				suc_massage = suc_massage.replace("%s" , dname );
+				dic_success_message (suc_massage);
+			},
+			deleteUD: function(dname) {
+				var all_buttons = dic_buttons[0] + ',' + dic_buttons[1];
+				var err_massage = captions["err_dic_delete"];
+				var suc_massage = captions["succ_dic_delete"];
+
+				suc_massage = suc_massage.replace("%s" , dname );
+				hide_dic_buttons ( all_buttons );
+				display_dic_buttons ( dic_buttons[0] );
+				set_dic_name( "" ); // empty input field
+				dic_success_message( suc_massage );
+			},
+			renameUD: function(dname) {
+				var err_massage = captions["err_dic_rename"] || "";
+				var suc_massage = captions["succ_dic_rename"] || "";
+
+				suc_massage = suc_massage.replace("%s" , dname );
+				set_dic_name( dname );
+				dic_success_message ( suc_massage );
+			},
+			restoreUD: function(dname) {
+				// try to restore existing dictionary
+				var all_buttons = dic_buttons[0] + ',' + dic_buttons[1];
+				var err_massage = captions["err_dic_restore"];
+				var suc_massage = captions["succ_dic_restore"];
+
+				suc_massage = suc_massage.replace("%s" , dname );
+				hide_dic_buttons ( all_buttons );
+				display_dic_buttons(dic_buttons[1]);
+				dic_success_message( suc_massage );
+			}
+		};
+
+		dojo.subscribe('scayt::createUD', udActions, 'createUD');
+		dojo.subscribe('scayt::deleteUD', udActions, 'deleteUD');
+		dojo.subscribe('scayt::renameUD', udActions, 'renameUD');
+		dojo.subscribe('scayt::restoreUD', udActions, 'restoreUD');
+
 		dic.dic_create = function( el, dic_name , dic_buttons )
 		{
 			// comma separated button's ids include repeats if exists
@@ -324,10 +374,7 @@ CKEDITOR.dialog.add( 'scaytcheck', function( editor )
 			window.scayt.createUserDictionary( dic_name,
 				function( arg )
 				{
-					hide_dic_buttons ( all_buttons );
-					display_dic_buttons ( dic_buttons[1] );
-					suc_massage = suc_massage.replace("%s" , arg.dname );
-					dic_success_message (suc_massage);
+					udActions.createUD(arg.dname);
 				},
 				function( arg )
 				{
@@ -346,9 +393,7 @@ CKEDITOR.dialog.add( 'scaytcheck', function( editor )
 			window.scayt.renameUserDictionary( dic_name,
 				function( arg )
 					{
-						suc_massage = suc_massage.replace("%s" , arg.dname );
-						set_dic_name( dic_name );
-						dic_success_message ( suc_massage );
+						udActions.renameUD(arg.dname);
 					},
 				function( arg )
 					{
@@ -367,12 +412,8 @@ CKEDITOR.dialog.add( 'scaytcheck', function( editor )
 			// try to delete dictionary
 			window.scayt.deleteUserDictionary(
 				function( arg )
-				{
-					suc_massage = suc_massage.replace("%s" , arg.dname );
-					hide_dic_buttons ( all_buttons );
-					display_dic_buttons ( dic_buttons[0] );
-					set_dic_name( "" ); // empty input field
-					dic_success_message( suc_massage );
+				{	
+					udActions.deleteUD(arg.dname);
 				},
 				function( arg )
 				{
@@ -391,10 +432,7 @@ CKEDITOR.dialog.add( 'scaytcheck', function( editor )
 				window.scayt.restoreUserDictionary(dic_name,
 					function( arg )
 					{
-						suc_massage = suc_massage.replace("%s" , arg.dname );
-						hide_dic_buttons ( all_buttons );
-						display_dic_buttons(dic_buttons[1]);
-						dic_success_message( suc_massage );
+						udActions.restoreUD(arg.dname);
 					},
 					function( arg )
 					{
