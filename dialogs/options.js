@@ -358,10 +358,10 @@ CKEDITOR.dialog.add( 'scaytcheck', function( editor )
 			}
 		};
 
-		dojo.subscribe('scayt::createUD', udActions, 'createUD');
-		dojo.subscribe('scayt::deleteUD', udActions, 'deleteUD');
-		dojo.subscribe('scayt::renameUD', udActions, 'renameUD');
-		dojo.subscribe('scayt::restoreUD', udActions, 'restoreUD');
+		scayt.subscribe('scayt::createUD', udActions, 'createUD');
+		scayt.subscribe('scayt::deleteUD', udActions, 'deleteUD');
+		scayt.subscribe('scayt::renameUD', udActions, 'renameUD');
+		scayt.subscribe('scayt::restoreUD', udActions, 'restoreUD');
 
 		dic.dic_create = function( el, dic_name , dic_buttons )
 		{
