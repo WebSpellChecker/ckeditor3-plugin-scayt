@@ -32,9 +32,14 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 	function restoreDirty( editor )
 	{
 		if ( !editor.checkDirty() ){
-			setTimeout( function(){ editor.resetDirty(); }, 0 );
+			setTimeout( function(){ 
+				try {
+					editor.resetDirty(); 
+				} catch(e) {}
+				
+			}, 0 );
 			// console.log("restore dirty");
-			}
+		}
 	}
 	
 	var onEngineLoad = function()
@@ -79,7 +84,11 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 			oParams.onBeforeChange = function()
 			{
 				if ( plugin.getScayt( editor ) && !editor.checkDirty() )
-					setTimeout( function(){ editor.resetDirty(); }, 0 );
+					setTimeout(function(){
+						try {
+							editor.resetDirty(); 
+						} catch(e) {}
+					}, 0 );
 			};
 
 			var scayt_custom_params = window.scayt_custom_params;
