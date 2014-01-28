@@ -9,7 +9,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 
 	var aboutTabDefinition = '<p><img src="' + scayt_instance.getLogo() + '" /></p>' +
 				'<p>' + scayt_instance.getLocal('version') + scayt_instance.getVersion() + '</p>' +
-				'<p>' + scayt_instance.getLocal('about_throw_copy') + '</p>';
+				'<p>' + scayt_instance.getLocal('text_copyrights') + '</p>';
 
 	var doc = CKEDITOR.document;
 	
@@ -18,10 +18,10 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 			applicationConfig = scayt_instance.getApplicationConfig(),
 			optionArrayUiCheckboxes = [],
 			optionLocalizationList = {
-				"ignore-all-caps-words" 		: "allCaps",
-				"ignore-domain-names" 			: "ignoreDomainNames",
-				"ignore-words-with-mixed-cases" : "mixedCase",
-				"ignore-words-with-numbers" 	: "mixedWithDigits"
+				"ignore-all-caps-words" 		: "label_allCaps",
+				"ignore-domain-names" 			: "label_ignoreDomainNames",
+				"ignore-words-with-mixed-cases" : "label_mixedCase",
+				"ignore-words-with-numbers" 	: "label_mixedWithDigits"
 			};
 
 		for(var option in applicationConfig){
@@ -31,7 +31,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 			};
 
 			checkboxConfig.id  = option;
-			checkboxConfig.label  = editor.lang.scayt[optionLocalizationList[option]];
+			checkboxConfig.label  = scayt_instance.getLocal(optionLocalizationList[option]);
 
 			optionArrayUiCheckboxes.push(checkboxConfig);
 		}
@@ -72,7 +72,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 
 	var dialogTabs = [{
 		id : 'options',
-		label : editor.lang.scayt.optionsTab,
+		label : scayt_instance.getLocal('tab_options'),
 		onShow: function(){
 			//console.log("tab show");
 		},
@@ -95,7 +95,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 	},
 	{
 		id : 'langs',
-		label : editor.lang.scayt.langs,
+		label : scayt_instance.getLocal('tab_languages'),
 		elements : [
 			{
 				id: "leftLangColumn",
@@ -122,7 +122,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 	},
 	{
 		id : 'dictionaries',
-		label : editor.lang.scayt.dictionariesTab,
+		label : scayt_instance.getLocal('tab_dictionaries'),
 		elements : [
 			{
 				type: 'vbox',
@@ -136,7 +136,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 					{
 						type: 'text',
 						id: 'dictionaryName',
-						label: scayt_instance.getLocal("dname"),
+						label: scayt_instance.getLocal('label_fieldNameDic') || 'Dictionary name',
 						onShow: function(data){
 							var dialog = data.sender,
 								scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name];
@@ -158,8 +158,8 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 							{
 								type: 'button',
 								id: 'createDic',
-								label: editor.lang.scayt.dic_create,
-								title: editor.lang.scayt.dic_create,
+								label: scayt_instance.getLocal('btn_createDic'),
+								title: scayt_instance.getLocal('btn_createDic'),
 								onClick: function() {
 									var dialog = this.getDialog(),
 										scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name],
@@ -206,8 +206,8 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 							{
 								type: 'button',
 								id: 'restoreDic',
-								label: editor.lang.scayt.dic_restore,
-								title: editor.lang.scayt.dic_restore,
+								label: scayt_instance.getLocal('btn_restoreDic'),
+								title: scayt_instance.getLocal('btn_restoreDic'),
 								onClick: function() {
 									var dialog = this.getDialog(),
 										scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name],
@@ -250,7 +250,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 					{
 						type: 'html',
 						id: 'dicInfo',
-						html: '<div id="dic_info_editor1" style="margin:5px auto; width:95%;white-space:normal;">' + editor.lang.scayt.dic_info  + '</div>'
+						html: '<div id="dic_info_editor1" style="margin:5px auto; width:95%;white-space:normal;">' + scayt_instance.getLocal('text_descriptionDic')  + '</div>'
 					}
 				]
 			}
@@ -258,7 +258,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 	},
 	{
 		id : 'about',
-		label : editor.lang.scayt.aboutTab,
+		label : scayt_instance.getLocal('tab_about'),
 		elements : [
 			{
 				type : 'html',
@@ -272,29 +272,60 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 	}];
 
 	editor.on("scaytUserDictionaryAction", function(event){
-		var dialog = event.data.dialog;
+		var dialog = event.data.dialog,
+			dictionaryNote = dialog.getContentElement("dictionaries", "dictionaryNote").getElement(),
+			messageTemplate, dictionaryName = dialog.getContentElement("dictionaries", "dictionaryName").getValue();
 
-		if(event.data.error === undefined){
-			dialog.getContentElement("dictionaries", "dictionaryNote").getElement().setText(scayt_instance.getLocal("dic_" + event.data.command + "_suc"));
-		}else{
-			dialog.getContentElement("dictionaries", "dictionaryNote").getElement().setText(scayt_instance.getLocal("dic_" + event.data.command + "_err"));
+		if(event.data.error === undefined) {
+
+			// success message
+			messageTemplate = scayt_instance.getLocal("message_success_" + event.data.command + "Dic");
+			messageTemplate = messageTemplate.replace('%s', dictionaryName);
+			dictionaryNote.setText(messageTemplate);
+			SCAYT.$(dictionaryNote.$).css({color: 'blue'});
+		} else {
+
+			// error message
+			if(dictionaryName === '') {
+
+				// empty dictionary name
+				dictionaryNote.setText(scayt_instance.getLocal('message_info_emptyDic'));
+			} else {
+				messageTemplate = scayt_instance.getLocal("message_error_" + event.data.command + "Dic");
+				messageTemplate = messageTemplate.replace('%s', dictionaryName);
+				dictionaryNote.setText(messageTemplate);
+			}
+			SCAYT.$(dictionaryNote.$).css({color: 'red'});
 			
-			if(scayt_instance.getUserDictionaryName() != null && scayt_instance.getUserDictionaryName() != ''){
+			if(scayt_instance.getUserDictionaryName() != null && scayt_instance.getUserDictionaryName() != '') {
 				dialog.getContentElement("dictionaries", "dictionaryName").setValue(scayt_instance.getUserDictionaryName());
-			}else{
+			} else {
 				dialog.getContentElement("dictionaries", "dictionaryName").setValue("");
 			}
 		}
 	});
 
-	editor.on("scaytUserDictionaryActionError", function(event){
-		var dialog = event.data.dialog;
+	editor.on("scaytUserDictionaryActionError", function(event) {
+		var dialog = event.data.dialog,
+			dictionaryNote = dialog.getContentElement("dictionaries", "dictionaryNote").getElement(),
+			messageTemplate, dictionaryName = dialog.getContentElement("dictionaries", "dictionaryName").getValue();
 
-		dialog.getContentElement("dictionaries", "dictionaryNote").getElement().setText(scayt_instance.getLocal("dic_" + event.data.command + "_err"));
+		if(dictionaryName === '') {
+
+			// empty dictionary name
+			dictionaryNote.setText(scayt_instance.getLocal('message_info_emptyDic'));
+
+		} else {
+			messageTemplate = scayt_instance.getLocal("message_error_" + event.data.command + "Dic");
+			messageTemplate = messageTemplate.replace('%s', dictionaryName);
+			dictionaryNote.setText(messageTemplate);
+		}
+		SCAYT.$(dictionaryNote.$).css({color: 'red'});
 		
-		if(scayt_instance.getUserDictionaryName() != null && scayt_instance.getUserDictionaryName() != ''){
+		
+		if(scayt_instance.getUserDictionaryName() != null && scayt_instance.getUserDictionaryName() != '') {
 			dialog.getContentElement("dictionaries", "dictionaryName").setValue(scayt_instance.getUserDictionaryName());
-		}else{
+		} else {
 			dialog.getContentElement("dictionaries", "dictionaryName").setValue("");
 		}
 		
@@ -303,7 +334,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 	var plugin = CKEDITOR.plugins.scayt;
 
 	var dialogDefinition = {
-		title:          editor.lang.scayt.title,
+		title:          scayt_instance.getLocal('text_title'),
 		resizable:      CKEDITOR.DIALOG_RESIZE_BOTH,
 		minWidth:       380,
 		minHeight:      260,
@@ -366,11 +397,12 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 		toggleDictionaryButtons: function(exist){
 
 			var self = dialogDefinition,
+				scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name],
 				existName = {
-					create: editor.lang.scayt.dic_create,
-					restore: editor.lang.scayt.dic_restore,
-					remove: editor.lang.scayt.dic_delete, 
-					rename: editor.lang.scayt.dic_rename
+					create: scayt_instance.getLocal('btn_createDic'),
+					restore: scayt_instance.getLocal('btn_restoreDic'),
+					remove: scayt_instance.getLocal('btn_deleteDic'),
+					rename: scayt_instance.getLocal('btn_renameDic')
 				};
 
 			var buttonsDOM = this.getContentElement("dictionaries", "existDic").getChild();
