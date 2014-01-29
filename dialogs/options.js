@@ -274,7 +274,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 	editor.on("scaytUserDictionaryAction", function(event){
 		var dialog = event.data.dialog,
 			dictionaryNote = dialog.getContentElement("dictionaries", "dictionaryNote").getElement(),
-			messageTemplate, dictionaryName = dialog.getContentElement("dictionaries", "dictionaryName").getValue();
+			messageTemplate, dictionaryName = event.data.name || dialog.getContentElement("dictionaries", "dictionaryName").getValue();
 
 		if(event.data.error === undefined) {
 
@@ -308,7 +308,8 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 	editor.on("scaytUserDictionaryActionError", function(event) {
 		var dialog = event.data.dialog,
 			dictionaryNote = dialog.getContentElement("dictionaries", "dictionaryNote").getElement(),
-			messageTemplate, dictionaryName = dialog.getContentElement("dictionaries", "dictionaryName").getValue();
+			messageTemplate, 
+			dictionaryName = event.data.name || dialog.getContentElement("dictionaries", "dictionaryName").getValue();
 
 		if(dictionaryName === '') {
 
