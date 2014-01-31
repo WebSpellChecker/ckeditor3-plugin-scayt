@@ -330,6 +330,7 @@ CKEDITOR.dialog.add( 'scaytcheck', function( editor )
 					suc_massage = suc_massage.replace("%s" , arg.dname );
 					dic_success_message (suc_massage);
 					window.scayt.userDictionaryName = arg.dname ? arg.dname : '';
+					scayt_control._userDictionaryName = arg.dname ? arg.dname : '';
 				},
 				function( arg )
 				{
@@ -352,6 +353,7 @@ CKEDITOR.dialog.add( 'scaytcheck', function( editor )
 						set_dic_name( dic_name );
 						dic_success_message ( suc_massage );
 						window.scayt.userDictionaryName = arg.dname ? arg.dname : '';
+						scayt_control._userDictionaryName = arg.dname ? arg.dname : '';
 					},
 				function( arg )
 					{
@@ -377,6 +379,7 @@ CKEDITOR.dialog.add( 'scaytcheck', function( editor )
 					set_dic_name( "" ); // empty input field
 					dic_success_message( suc_massage );
 					window.scayt.userDictionaryName = '';
+					scayt_control._userDictionaryName = '';
 				},
 				function( arg )
 				{
@@ -400,6 +403,7 @@ CKEDITOR.dialog.add( 'scaytcheck', function( editor )
 						display_dic_buttons(dic_buttons[1]);
 						dic_success_message( suc_massage );
 						window.scayt.userDictionaryName = arg.dname ? arg.dname : '';
+						scayt_control._userDictionaryName = arg.dname ? arg.dname : '';
 					},
 					function( arg )
 					{
