@@ -247,6 +247,21 @@ CKEDITOR.plugins.add('scayt', {
 			}
 		});
 
+		editor.on('beforeSetMode', function(ev) {
+			var scaytInstance;
+			// needed when we use:
+			// CKEDITOR.instances.editor_ID.setMode("source")
+			// CKEDITOR.instances.editor_ID.setMode("wysiwyg")
+			// can't be implemented in editor.on('mode', function(ev) {});
+			if(ev.data.newMode == 'source') {
+				scaytInstance = editor.scayt;
+				if(scaytInstance) {
+					plugin.destroy(editor);
+					editor.fire('scaytButtonState', CKEDITOR.TRISTATE_DISABLED);
+				}
+			}
+		});
+
 		editor.on('afterCommandExec', function(ev) {
 			var scaytInstance;
 
