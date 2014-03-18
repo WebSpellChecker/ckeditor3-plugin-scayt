@@ -329,6 +329,15 @@ CKEDITOR.plugins.add('scayt', {
 			}
 		}, this, null, 50);
 
+		editor.on('insertText', function() {
+			var scaytInstance = editor.scayt;
+
+			if(scaytInstance) {
+				scaytInstance.removeMarkupInSelectionNode();
+				scaytInstance.fire('startSpellCheck');
+			}
+		}, this, null, 50);
+
 		// The event is listening to open necessary dialog tab
 		editor.on('scaytDialogShown', function(ev) {
 			var dialog = ev.data,
