@@ -581,15 +581,17 @@ CKEDITOR.plugins.add('scayt', {
 	buildSuggestionMenuItems: function(editor, suggestions) {
 		var self = this,
 			itemList = {},
-			subItemList = {};
+			subItemList = {},
+			plugin = CKEDITOR.plugins.scayt;
 
 		if(suggestions.length > 0 && suggestions[0] !== 'no_any_suggestions') {
 			for(var i = 0; i < suggestions.length; i++) {
 
-				var commandName = 'scayt_suggest_' + CKEDITOR.plugins.scayt.suggestions[i].replace(' ', '_');
-				editor.addCommand(commandName, self.createCommand(CKEDITOR.plugins.scayt.suggestions[i]));
+				var commandName = 'scayt_suggest_' + plugin.suggestions[i].replace(' ', '_');
+				editor.addCommand(commandName, self.createCommand(plugin.suggestions[i]));
 
 				if(i < editor.config.scayt_maxSuggestions) {
+
 					/* mainSuggestions */
 					editor.addMenuItem(commandName, {
 						label: suggestions[i],
@@ -597,8 +599,11 @@ CKEDITOR.plugins.add('scayt', {
 						group: 'scayt_suggest',
 						order: i + 1
 					});
+
 					itemList[commandName] = CKEDITOR.TRISTATE_OFF;
+
 				} else {
+
 					//moreSuggestions
 					editor.addMenuItem(commandName, {
 						label: suggestions[i],
@@ -606,9 +611,11 @@ CKEDITOR.plugins.add('scayt', {
 						group: 'scayt_moresuggest',
 						order: i + 1
 					});
+
 					subItemList[commandName] = CKEDITOR.TRISTATE_OFF;
 
 					if(editor.config.scayt_moreSuggestions === 'on') {
+
 						editor.addMenuItem('scayt_moresuggest', {
 							label : editor.lang.scayt.moreSuggestions,
 							group : 'scayt_moresuggest',
@@ -760,8 +767,19 @@ CKEDITOR.plugins.scayt = {
 			});
 
 			_scaytInstance.subscribe('suggestionListSend', function(data) {
-				// TODO: maybe store suggestions for specific editor
-				CKEDITOR.plugins.scayt.suggestions = data.suggestionList;
+				// TODO: 1. Maybe store suggestions for specific editor
+				// TODO: 2. Fix issue with suggestion duplicates on on server
+				//CKEDITOR.plugins.scayt.suggestions = data.suggestionList;
+				var _wordsCollection = {},
+					_suggestionList =[];
+				for (var i=0; i < data.suggestionList.length; i++) {
+					if (!_wordsCollection[data.suggestionList[i]]) {
+						_wordsCollection[data.suggestionList[i]] = data.suggestionList[i];
+						_suggestionList.push(data.suggestionList[i]);
+					}
+				}
+				CKEDITOR.plugins.scayt.suggestions = _suggestionList;
+
 			});
 
 			_editor.scayt = _scaytInstance;
