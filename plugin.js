@@ -314,10 +314,12 @@ CKEDITOR.plugins.add('scayt', {
 		editor.on('insertElement', function() {
 			var scaytInstance = editor.scayt;
 
-			if(scaytInstance) {
-				scaytInstance.removeMarkupInSelectionNode();
-				scaytInstance.fire('startSpellCheck');
-			}
+			setTimeout(function() {
+				if(scaytInstance) {
+					scaytInstance.removeMarkupInSelectionNode();
+					scaytInstance.fire('startSpellCheck');
+				}
+			}, 50);
 		}, this, null, 50);
 
 		editor.on('insertHtml', function() {
