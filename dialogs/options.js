@@ -5,7 +5,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 {
-	var scayt_instance =  CKEDITOR.plugins.scayt.getScayt(editor);
+	var scayt_instance =  editor.scayt;
 
 	var aboutTabDefinition = '<p><img src="' + scayt_instance.getLogo() + '" /></p>' +
 				'<p>' + scayt_instance.getLocal('version') + scayt_instance.getVersion() + '</p>' +
@@ -14,7 +14,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 	var doc = CKEDITOR.document;
 
 	var optionGenerator = function(){
-		var scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name],
+		var scayt_instance = editor.scayt,
 			applicationConfig = scayt_instance.getApplicationConfig(),
 			optionArrayUiCheckboxes = [],
 			optionLocalizationList = {
@@ -83,7 +83,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 				children: optionGenerator(),
 				onShow: function(){
 					var optionsTab = this.getChild(),
-						scayt_instance =  CKEDITOR.plugins.scayt.getScayt(editor);
+						scayt_instance = editor.scayt;
 					for(var i = 0; i < this.getChild().length; i++){
 						this.getChild()[i].setValue(scayt_instance.getApplicationConfig()[this.getChild()[i].id]);
 					}
@@ -139,7 +139,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 						label: scayt_instance.getLocal('label_fieldNameDic') || 'Dictionary name',
 						onShow: function(data){
 							var dialog = data.sender,
-								scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name];
+								scayt_instance = editor.scayt;
 
 							// IE7 specific fix
 							setTimeout(function(){
@@ -162,7 +162,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 								title: scayt_instance.getLocal('btn_createDic'),
 								onClick: function() {
 									var dialog = this.getDialog(),
-										scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name],
+										scayt_instance = editor.scayt,
 										self = dialogDefinition,
 										dictionaryNameField = dialog.getContentElement("dictionaries", "dictionaryName"),
 										name = dictionaryNameField.getValue();
@@ -210,7 +210,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 								title: scayt_instance.getLocal('btn_restoreDic'),
 								onClick: function() {
 									var dialog = this.getDialog(),
-										scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name],
+										scayt_instance = editor.scayt,
 										self = dialogDefinition,
 										name = dialog.getContentElement("dictionaries", "dictionaryName").getValue();
 
@@ -357,7 +357,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 			//dialog.data = editor.fire( 'scaytDialog', {} );
 			self.renderLangList(langBoxes);
 
-			var scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name];
+			var scayt_instance = editor.scayt;
 		},
 		onCancel: function(){
 			languageModelState.reset();
@@ -369,7 +369,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 				return;
 			}
 
-			var scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name],
+			var scayt_instance = editor.scayt,
 				self = dialogDefinition,
 				dialog = this,
 				dictionaryNameField = dialog.getContentElement("dictionaries", "dictionaryName"),
@@ -391,7 +391,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 		},
 		onOk: function(){
 			var dialog = this,
-				scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name],
+				scayt_instance = editor.scayt,
 				self = dialogDefinition,
 				scaytOptions = dialog.getContentElement("options", "scaytOptions"),
 				changedOptions = self.getChangedOption.call(dialog);
@@ -401,7 +401,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 		toggleDictionaryButtons: function(exist){
 
 			var self = dialogDefinition,
-				scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name],
+				scayt_instance = editor.scayt,
 				existName = {
 					create: scayt_instance.getLocal('btn_createDic'),
 					restore: scayt_instance.getLocal('btn_restoreDic'),
@@ -456,7 +456,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 					' value="' + value + '" name="scayt_lang" />' ),
 
 				radioLabel = new CKEDITOR.dom.element( 'label' ),
-				scayt_instance = CKEDITOR.plugins.scayt.instances[editor.name];
+				scayt_instance = editor.scayt;
 
 
 			//divContainer.addClass("cke_dialog_ui_input_radio");
