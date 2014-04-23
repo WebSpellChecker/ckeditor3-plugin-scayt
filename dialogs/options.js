@@ -284,7 +284,6 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 			messageTemplate = messageTemplate.replace('%s', dictionaryName);
 			dictionaryNote.setText(messageTemplate);
 			UILib.css(dictionaryNote.$, {color: 'blue'});
-			// SCAYT.$(dictionaryNote.$).css({color: 'blue'});
 		} else {
 
 			// error message
@@ -299,7 +298,6 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 			}
 
 			UILib.css(dictionaryNote.$, {color: 'red'});
-			// SCAYT.$(dictionaryNote.$).css({color: 'red'});
 
 			if(scayt_instance.getUserDictionaryName() != null && scayt_instance.getUserDictionaryName() != '') {
 				dialog.getContentElement("dictionaries", "dictionaryName").setValue(scayt_instance.getUserDictionaryName());
@@ -327,7 +325,6 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 			dictionaryNote.setText(messageTemplate);
 		}
 		UILib.css(dictionaryNote.$, {color: 'red'});
-		// SCAYT.$(dictionaryNote.$).css({color: 'red'});
 
 
 		if(scayt_instance.getUserDictionaryName() != null && scayt_instance.getUserDictionaryName() != '') {
@@ -499,9 +496,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 			var dialog = this,
 				UILib = SCAYT.prototype.UILib,
 				leftCol = UILib.find('#left-col-' + editor.name, langBoxes.$),
-				// leftCol = SCAYT.$(langBoxes.$).find('#left-col-' + editor.name),
 				rightCol = UILib.find('#right-col-' + editor.name, langBoxes.$),
-				// rightCol = SCAYT.$(langBoxes.$).find('#right-col-' + editor.name),
 				langList = scayt_instance.getLangList(),
 				mergedLangList = {},
 				sortable = [],
@@ -539,7 +534,6 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 			for(var lang in mergedLangList) {
 				counter++;
 				UILib.appendTo(dialog.buildRadioInputs(mergedLangList[lang], lang).$, counter <= half ? leftCol : rightCol);
-				// SCAYT.$(dialog.buildRadioInputs(mergedLangList[lang], lang).$).appendTo(counter <= half ? leftCol : rightCol);
 			}
 		},
 		getLangBoxes: function(){
