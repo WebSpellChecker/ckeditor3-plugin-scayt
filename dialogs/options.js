@@ -272,7 +272,8 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 	}];
 
 	editor.on("scaytUserDictionaryAction", function(event){
-		var dialog = event.data.dialog,
+		var UILib = SCAYT.prototype.UILib,
+			dialog = event.data.dialog,
 			dictionaryNote = dialog.getContentElement("dictionaries", "dictionaryNote").getElement(),
 			messageTemplate, dictionaryName = event.data.name || dialog.getContentElement("dictionaries", "dictionaryName").getValue();
 
@@ -282,7 +283,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 			messageTemplate = scayt_instance.getLocal("message_success_" + event.data.command + "Dic");
 			messageTemplate = messageTemplate.replace('%s', dictionaryName);
 			dictionaryNote.setText(messageTemplate);
-			SCAYT.$(dictionaryNote.$).css({color: 'blue'});
+			UILib.css(dictionaryNote.$, {color: 'blue'});
 		} else {
 
 			// error message
@@ -295,7 +296,8 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 				messageTemplate = messageTemplate.replace('%s', dictionaryName);
 				dictionaryNote.setText(messageTemplate);
 			}
-			SCAYT.$(dictionaryNote.$).css({color: 'red'});
+
+			UILib.css(dictionaryNote.$, {color: 'red'});
 
 			if(scayt_instance.getUserDictionaryName() != null && scayt_instance.getUserDictionaryName() != '') {
 				dialog.getContentElement("dictionaries", "dictionaryName").setValue(scayt_instance.getUserDictionaryName());
@@ -306,7 +308,8 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 	});
 
 	editor.on("scaytUserDictionaryActionError", function(event) {
-		var dialog = event.data.dialog,
+		var UILib = SCAYT.prototype.UILib,
+			dialog = event.data.dialog,
 			dictionaryNote = dialog.getContentElement("dictionaries", "dictionaryNote").getElement(),
 			messageTemplate,
 			dictionaryName = event.data.name || dialog.getContentElement("dictionaries", "dictionaryName").getValue();
@@ -321,7 +324,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 			messageTemplate = messageTemplate.replace('%s', dictionaryName);
 			dictionaryNote.setText(messageTemplate);
 		}
-		SCAYT.$(dictionaryNote.$).css({color: 'red'});
+		UILib.css(dictionaryNote.$, {color: 'red'});
 
 
 		if(scayt_instance.getUserDictionaryName() != null && scayt_instance.getUserDictionaryName() != '') {
@@ -491,8 +494,9 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 		},
 		renderLangList: function(langBoxes){
 			var dialog = this,
-				leftCol = SCAYT.$(langBoxes.$).find('#left-col-' + editor.name),
-				rightCol = SCAYT.$(langBoxes.$).find('#right-col-' + editor.name),
+				UILib = SCAYT.prototype.UILib,
+				leftCol = UILib.find('#left-col-' + editor.name, langBoxes.$),
+				rightCol = UILib.find('#right-col-' + editor.name, langBoxes.$),
 				langList = scayt_instance.getLangList(),
 				mergedLangList = {},
 				sortable = [],
@@ -529,7 +533,7 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 
 			for(var lang in mergedLangList) {
 				counter++;
-				SCAYT.$(dialog.buildRadioInputs(mergedLangList[lang], lang).$).appendTo(counter <= half ? leftCol : rightCol);
+				UILib.appendTo(dialog.buildRadioInputs(mergedLangList[lang], lang).$, counter <= half ? leftCol : rightCol);
 			}
 		},
 		getLangBoxes: function(){
