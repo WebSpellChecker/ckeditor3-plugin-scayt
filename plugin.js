@@ -285,7 +285,10 @@ CKEDITOR.plugins.add('scayt', {
 
 				if(ev.editor.readOnly) {
 					if(scaytInstance) {
-						scaytInstance.fire('removeMarkupInDocument', {});
+						// we need to destroy SCAYT plugin because CK replaces original body tag on readOnly toggle
+						plugin.destroy(editor);
+						// and disable button
+						editor.fire('scaytButtonState', CKEDITOR.TRISTATE_DISABLED);
 					}
 				} else {
 					if(scaytInstance) {
