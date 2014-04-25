@@ -415,12 +415,16 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 
 			if(exist){
 				buttonsDOM[0].getElement().getChildren().$[0].innerHTML = existName.remove;
+				buttonsDOM[0].getElement().$.title = existName.remove;
 				buttonsDOM[1].getElement().getChildren().$[0].innerHTML = existName.rename;
+				buttonsDOM[1].getElement().$.title = existName.rename;
 				//existance.show();
 				//notExistance.hide();
 			}else{
 				buttonsDOM[0].getElement().getChildren().$[0].innerHTML = existName.create;
+				buttonsDOM[0].getElement().$.title = existName.create;
 				buttonsDOM[1].getElement().getChildren().$[0].innerHTML = existName.restore;
+				buttonsDOM[1].getElement().$.title = existName.restore;
 				//existance.hide();
 				//notExistance.show();
 			}
