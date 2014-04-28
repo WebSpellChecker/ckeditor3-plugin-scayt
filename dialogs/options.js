@@ -499,8 +499,8 @@ CKEDITOR.dialog.add( 'scaytDialog', function( editor )
 		renderLangList: function(langBoxes){
 			var dialog = this,
 				UILib = SCAYT.prototype.UILib,
-				leftCol = UILib.find('#left-col-' + editor.name, langBoxes.$),
-				rightCol = UILib.find('#right-col-' + editor.name, langBoxes.$),
+				leftCol = UILib.find('#left-col-' + editor.name, langBoxes.$)[0],
+				rightCol = UILib.find('#right-col-' + editor.name, langBoxes.$)[0],
 				langList = scayt_instance.getLangList(),
 				mergedLangList = {},
 				sortable = [],
