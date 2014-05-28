@@ -281,23 +281,23 @@ CKEDITOR.plugins.add('scayt', {
 
 			if(ev) {
 
-				scaytInstance = editor.scayt;
+				scaytInstance = ev.editor.scayt;
 
 				if(ev.editor.readOnly) {
 					if(scaytInstance) {
 						// we need to destroy SCAYT plugin because CK replaces original body tag on readOnly toggle
-						plugin.destroy(editor);
+						plugin.destroy(ev.editor);
 						// and disable button
-						editor.fire('scaytButtonState', CKEDITOR.TRISTATE_DISABLED);
+						ev.editor.fire('scaytButtonState', CKEDITOR.TRISTATE_DISABLED);
 					}
 				} else {
 					if(scaytInstance) {
 						scaytInstance.fire('startSpellCheck');
 					} else if(ev.editor.mode == 'wysiwyg' && plugin.state[ev.editor.name]) {
 						setTimeout(function() {
-							plugin.createScayt(editor);
+							plugin.createScayt(ev.editor);
 							ev.editor.fire('scaytButtonState', CKEDITOR.TRISTATE_ON);
-						}, 10);
+						}, 200);
 					}
 				}
 			}
