@@ -350,14 +350,6 @@ CKEDITOR.plugins.add('scayt', {
 
 			dialog.selectPage(scaytInstance.tabToOpen);
 		});
-
-		editor.on('getData', function(ev) {
-			var scaytInstance = editor.scayt;
-
-			if(scaytInstance) {
-				ev.data.dataValue = scaytInstance.removeMarkupFromString(ev.data.dataValue);
-			}
-		});
 	},
 	parseConfig: function(editor) {
 		var plugin = CKEDITOR.plugins.scayt;
@@ -442,16 +434,16 @@ CKEDITOR.plugins.add('scayt', {
 			pathFilters = editor._.elementsPath && editor._.elementsPath.filters,
 			dataFilter = dataProcessor && dataProcessor.dataFilter,
 			removeFormatFilter = editor.addRemoveFormatFilter,
+
 			scaytFilter = function scaytFilter(element) {
 				var plugin = CKEDITOR.plugins.scayt,
 					scaytInstance = editor.scayt;
 
-				if(!scaytInstance) {
-					return element.getName();
-				} else if(element.hasAttribute(plugin.options.data_attribute_name)) {
+				if(scaytInstance && element.hasAttribute(plugin.options.data_attribute_name)) {
 					return false;
 				}
 			},
+
 			removeFormatFilterTemplate = function(element) {
 				var plugin = CKEDITOR.plugins.scayt,
 					scaytInstance = editor.scayt,
@@ -484,6 +476,26 @@ CKEDITOR.plugins.add('scayt', {
 			};
 
 			dataFilter.addRules(dataFilterRules);
+		}
+
+		if (htmlFilter) {
+			var htmlFilterRules = {
+				elements: {
+					span: function(element) {
+						var plugin = CKEDITOR.plugins.scayt;
+
+						if(plugin && plugin.state[editor.name] && plugin.checkSubstringInString(plugin.options.misspelled_word_class, element.attributes.class) && element.attributes[plugin.options.data_attribute_name]) {
+							element.attributes.class = plugin.removeSubstringInString(plugin.options.misspelled_word_class, element.attributes.class);
+							delete element.attributes[plugin.options.data_attribute_name];
+							delete element.name;
+						}
+
+						return element;
+					}
+				}
+			};
+
+			htmlFilter.addRules(htmlFilterRules);
 		}
 
 		if(removeFormatFilter) {
@@ -716,7 +728,8 @@ CKEDITOR.plugins.scayt = {
 			newpage: true,
 			templates: true
 		},
-		data_attribute_name: 'data-scayt-word'
+		data_attribute_name: 'data-scayt-word',
+		misspelled_word_class: 'scayt-misspell-word'
 	},
 	backCompatibilityMap: {
 		'scayt_service_protocol': 'scayt_serviceProtocol',
@@ -733,6 +746,18 @@ CKEDITOR.plugins.scayt = {
 			}
 		}
 	},
+	checkSubstringInString: function(className, classesString) {
+		var classRegex = new RegExp('(^|\\s)' + className + '(\\s|$)');
+
+		return classRegex.test(classesString);
+	},
+	removeSubstringInString: function(className, classesString) {
+		var result = classesString,
+			classRegex = new RegExp('(^|\\s)' + className + '(\\s|$)');
+
+		result = result.replace(classRegex, ' ').replace(/\s+$/, '');
+		return result;
+	},
 	createScayt: function(editor) {
 		var self = this;
 
@@ -744,7 +769,8 @@ CKEDITOR.plugins.scayt = {
 				userDictionaryName 	: _editor.config.scayt_userDictionaryName,
 				localization		: _editor.langCode,
 				customer_id			: _editor.config.scayt_customerId,
-				data_attribute_name : self.options.data_attribute_name
+				data_attribute_name : self.options.data_attribute_name,
+				misspelled_word_class: self.options.misspelled_word_class
 			};
 
 			if(_editor.config.scayt_serviceProtocol) {
