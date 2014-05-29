@@ -484,8 +484,8 @@ CKEDITOR.plugins.add('scayt', {
 					span: function(element) {
 						var plugin = CKEDITOR.plugins.scayt;
 
-						if(plugin && plugin.state[editor.name] && plugin.checkSubstringInString(plugin.options.misspelled_word_class, element.attributes.class) && element.attributes[plugin.options.data_attribute_name]) {
-							element.attributes.class = plugin.removeSubstringInString(plugin.options.misspelled_word_class, element.attributes.class);
+						if(plugin && plugin.state[editor.name] && plugin.checkSubstringInString(plugin.options.misspelled_word_class, element.attributes['class']) && element.attributes[plugin.options.data_attribute_name]) {
+							element.attributes['class'] = plugin.removeSubstringInString(plugin.options.misspelled_word_class, element.attributes['class']);
 							delete element.attributes[plugin.options.data_attribute_name];
 							delete element.name;
 						}
