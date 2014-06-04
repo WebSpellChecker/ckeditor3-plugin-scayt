@@ -261,6 +261,9 @@ CKEDITOR.plugins.add('scayt', {
 					plugin.destroy(editor);
 					editor.fire('scaytButtonState', CKEDITOR.TRISTATE_DISABLED);
 				}
+
+				// remove custom data from body, to prevent waste properties showing in IE8
+				editor.document.getBody().removeAttribute('_jquid');
 			}
 		});
 
@@ -451,7 +454,7 @@ CKEDITOR.plugins.add('scayt', {
 					scaytInstance = editor.scayt,
 					result = true;
 
-				if(scaytInstance && element.hasAttribute(plugin.options.data_attribute_name)) {
+				if(scaytInstance && element.hasAttribute(plugin.options.data_attribute_name) || element.hasAttribute('_jquid')) {
 					result = false;
 				}
 
