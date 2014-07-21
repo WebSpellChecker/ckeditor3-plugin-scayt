@@ -357,7 +357,8 @@ CKEDITOR.plugins.add('scayt', {
 		});
 	},
 	parseConfig: function(editor) {
-		var plugin = CKEDITOR.plugins.scayt;
+		var plugin = CKEDITOR.plugins.scayt,
+			defaultElementsToIgnore = 'style';
 
 		// preprocess config for backward compatibility
 		plugin.replaceOldOptionsNames(editor.config);
@@ -431,6 +432,13 @@ CKEDITOR.plugins.add('scayt', {
 
 		if(typeof CKEDITOR.config.scayt_handleUndoRedo !== 'boolean') {
 			CKEDITOR.config.scayt_handleUndoRedo = true;
+		}
+
+		if(typeof editor.config.scayt_elementsToIgnore === 'string' && editor.config.scayt_elementsToIgnore) {
+			editor.config.scayt_elementsToIgnore = editor.config.scayt_elementsToIgnore.replace(/ /g, '');
+			editor.config.scayt_elementsToIgnore = new RegExp('^(' + editor.config.scayt_elementsToIgnore.replace(/,/g, '|') + '|' + defaultElementsToIgnore + ')$', 'i');
+		} else {
+			editor.config.scayt_elementsToIgnore = new RegExp('^(' + defaultElementsToIgnore + ')$', 'i');
 		}
 	},
 	addRule: function(editor) {
@@ -775,7 +783,8 @@ CKEDITOR.plugins.scayt = {
 				localization		: _editor.langCode,
 				customer_id			: _editor.config.scayt_customerId,
 				data_attribute_name : self.options.data_attribute_name,
-				misspelled_word_class: self.options.misspelled_word_class
+				misspelled_word_class: self.options.misspelled_word_class,
+				ignoreElementsRegex : _editor.config.scayt_elementsToIgnore
 			};
 
 			if(_editor.config.scayt_serviceProtocol) {
