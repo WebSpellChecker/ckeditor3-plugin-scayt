@@ -357,8 +357,7 @@ CKEDITOR.plugins.add('scayt', {
 		});
 	},
 	parseConfig: function(editor) {
-		var plugin = CKEDITOR.plugins.scayt,
-			defaultElementsToIgnore = 'style';
+		var plugin = CKEDITOR.plugins.scayt;
 
 		// preprocess config for backward compatibility
 		plugin.replaceOldOptionsNames(editor.config);
@@ -432,13 +431,6 @@ CKEDITOR.plugins.add('scayt', {
 
 		if(typeof CKEDITOR.config.scayt_handleUndoRedo !== 'boolean') {
 			CKEDITOR.config.scayt_handleUndoRedo = true;
-		}
-
-		if(typeof editor.config.scayt_elementsToIgnore === 'string' && editor.config.scayt_elementsToIgnore) {
-			editor.config.scayt_elementsToIgnore = editor.config.scayt_elementsToIgnore.replace(/ /g, '');
-			editor.config.scayt_elementsToIgnore = new RegExp('^(' + editor.config.scayt_elementsToIgnore.replace(/,/g, '|') + '|' + defaultElementsToIgnore + ')$', 'i');
-		} else {
-			editor.config.scayt_elementsToIgnore = new RegExp('^(' + defaultElementsToIgnore + ')$', 'i');
 		}
 	},
 	addRule: function(editor) {
