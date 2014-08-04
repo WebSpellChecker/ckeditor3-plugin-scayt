@@ -775,7 +775,8 @@ CKEDITOR.plugins.scayt = {
 				localization		: _editor.langCode,
 				customer_id			: _editor.config.scayt_customerId,
 				data_attribute_name : self.options.data_attribute_name,
-				misspelled_word_class: self.options.misspelled_word_class
+				misspelled_word_class: self.options.misspelled_word_class,
+				ignoreElementsRegex : _editor.config.scayt_elementsToIgnore
 			};
 
 			if(_editor.config.scayt_serviceProtocol) {
