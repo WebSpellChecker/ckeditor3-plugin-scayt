@@ -66,7 +66,7 @@
  * Default value : [scayt_srcUrl = '//svc.webspellchecker.net/spellcheck31/lf/scayt3/ckscayt/ckscayt.js']
  *
  * @property {String} scayt_customDictionaryIds - The parameter links SCAYT to custom dictionaries. This is a string containing dictionary IDs
- * separared by commas (',').
+ * separated by commas (',').
  * Further details at [http://wiki.webspellchecker.net/doku.php?id=installationandconfiguration:customdictionaries:licensed](http://wiki.webspellchecker.net/doku.php?id=installationandconfiguration:customdictionaries:licensed).
  * Default value : [scayt_customDictionaryIds='']
  *
@@ -90,7 +90,7 @@
  * If set to false, provides better performance on undo\redo actions
  * Default value : [scayt_handleUndoRedo=true]
  *
- * @property {String} scayt_elementsToIgnore - Specifies the names of tags that will be skipped while spell checking. It is a string containing tag names separared by commas (',').
+ * @property {String} scayt_elementsToIgnore - Specifies the names of tags that will be skipped while spell checking. It is a string containing tag names separated by commas (',').
  * Please note that 'style' tag would be added to specified tags list.
  * Default value : [scayt_elementsToIgnore='style']
  *
