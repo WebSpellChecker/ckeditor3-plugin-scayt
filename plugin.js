@@ -81,17 +81,18 @@ CKEDITOR.plugins.add('scayt', {
 				if(scaytInstance && !editor.readOnly) {
 					// TODO: implement right lang getter
 					var selectionNode = scaytInstance.getSelectionNode(),
-						word;
+						word, lang;
 
 					if(selectionNode) {
 						word = selectionNode.getAttribute(scaytInstance.getNodeAttribute());
+						lang = selectionNode.getAttribute(scaytInstance.getLangAttribute());
 					} else {
 						word = selectionNode;
 					}
 
 					// SCAYT shouldn't build context menu if instance isnot created or word is without misspelling
 					if(word) {
-						var items = self.menuGenerator(editor, word, self);
+						var items = self.menuGenerator(editor, word, lang);
 
 						scaytInstance.showBanner('.' + editor.contextMenu._.definition.panel.className.split(' ').join(' .'));
 						result = items;
@@ -669,7 +670,7 @@ CKEDITOR.plugins.add('scayt', {
 
 		return itemList;
 	},
-	menuGenerator: function(editor, word) {
+	menuGenerator: function(editor, word, lang) {
 		var self = this,
 			scaytInstance = editor.scayt,
 			menuItem = this.scaytMenuDefinition(editor),
@@ -678,7 +679,7 @@ CKEDITOR.plugins.add('scayt', {
 			moreSuggestions = {},
 			allowedOption = editor.config.scayt_contextCommands.split('|');
 
-		scaytInstance.fire('getSuggestionsList', {lang: scaytInstance.getLang(), word: word});
+		scaytInstance.fire('getSuggestionsList', {lang: lang, word: word});
 		itemList = this.buildSuggestionMenuItems(editor, CKEDITOR.plugins.scayt.suggestions);
 
 		if(editor.config.scayt_contextCommands == 'off') {
@@ -767,41 +768,49 @@ CKEDITOR.plugins.scayt = {
 		var self = this;
 
 		this.loadScaytLibrary(editor, function(_editor) {
-			var _scaytInstanceOptions = {
-				lang 				: _editor.config.scayt_sLang,
-				container 			: _editor.document.getWindow().$.frameElement,
-				customDictionary	: _editor.config.scayt_customDictionaryIds,
-				userDictionaryName 	: _editor.config.scayt_userDictionaryName,
-				localization		: _editor.langCode,
-				customer_id			: _editor.config.scayt_customerId,
-				data_attribute_name : self.options.data_attribute_name,
-				misspelled_word_class: self.options.misspelled_word_class,
-				ignoreElementsRegex : _editor.config.scayt_elementsToIgnore
-			};
+			var container = _editor.document.getWindow().$.frameElement,
+				scaytInstanceOptions = {
+					lang 				: _editor.config.scayt_sLang,
+					container 			: container,
+					customDictionary	: _editor.config.scayt_customDictionaryIds,
+					userDictionaryName 	: _editor.config.scayt_userDictionaryName,
+					localization		: _editor.langCode,
+					customer_id			: _editor.config.scayt_customerId,
+					data_attribute_name : self.options.data_attribute_name,
+					misspelled_word_class: self.options.misspelled_word_class,
+					ignoreElementsRegex : _editor.config.scayt_elementsToIgnore
+				},
+				containerID;
 
 			if(_editor.config.scayt_serviceProtocol) {
-				_scaytInstanceOptions['service_protocol'] = _editor.config.scayt_serviceProtocol;
+				scaytInstanceOptions['service_protocol'] = _editor.config.scayt_serviceProtocol;
 			}
 
 			if(_editor.config.scayt_serviceHost) {
-				_scaytInstanceOptions['service_host'] = _editor.config.scayt_serviceHost;
+				scaytInstanceOptions['service_host'] = _editor.config.scayt_serviceHost;
 			}
 
 			if(_editor.config.scayt_servicePort) {
-				_scaytInstanceOptions['service_port'] = _editor.config.scayt_servicePort;
+				scaytInstanceOptions['service_port'] = _editor.config.scayt_servicePort;
 			}
 
 			if(_editor.config.scayt_servicePath) {
-				_scaytInstanceOptions['service_path'] = _editor.config.scayt_servicePath;
+				scaytInstanceOptions['service_path'] = _editor.config.scayt_servicePath;
 			}
 
-			var _scaytInstance = new SCAYT.CKSCAYT(_scaytInstanceOptions, function() {
+			// Fix bug with getting wrong uid after re-creating SCAYT instance.
+			// And as result - restoring options for wrong instance
+			if(!container.id) {
+				container.id = _editor.element.getAttribute('id');
+			}
+
+			var scaytInstance = new SCAYT.CKSCAYT(scaytInstanceOptions, function() {
 				// success callback
 			}, function() {
 				// error callback
 			});
 
-			_scaytInstance.subscribe('suggestionListSend', function(data) {
+			scaytInstance.subscribe('suggestionListSend', function(data) {
 				// TODO: 1. Maybe store suggestions for specific editor
 				// TODO: 2. Fix issue with suggestion duplicates on on server
 				//CKEDITOR.plugins.scayt.suggestions = data.suggestionList;
@@ -817,7 +826,7 @@ CKEDITOR.plugins.scayt = {
 
 			});
 
-			_editor.scayt = _scaytInstance;
+			_editor.scayt = scaytInstance;
 
 			_editor.fire('scaytButtonState', _editor.readOnly ? CKEDITOR.TRISTATE_DISABLED : CKEDITOR.TRISTATE_ON);
 		});
