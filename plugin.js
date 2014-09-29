@@ -796,25 +796,27 @@ CKEDITOR.plugins.scayt = {
 			}
 
 			var _scaytInstance = new SCAYT.CKSCAYT(_scaytInstanceOptions, function() {
-				// success callback
-			}, function() {
-				// error callback
-			});
+					// success callback
+				}, function() {
+					// error callback
+				}),
+				wordsPrefix = 'word_';
 
 			_scaytInstance.subscribe('suggestionListSend', function(data) {
 				// TODO: 1. Maybe store suggestions for specific editor
 				// TODO: 2. Fix issue with suggestion duplicates on on server
 				//CKEDITOR.plugins.scayt.suggestions = data.suggestionList;
 				var _wordsCollection = {},
-					_suggestionList =[];
-				for (var i=0; i < data.suggestionList.length; i++) {
-					if (!_wordsCollection[data.suggestionList[i]]) {
-						_wordsCollection[data.suggestionList[i]] = data.suggestionList[i];
+					_suggestionList = [];
+
+				for (var i = 0; i < data.suggestionList.length; i++) {
+					if (!_wordsCollection[wordsPrefix + data.suggestionList[i]]) {
+						_wordsCollection[wordsPrefix + data.suggestionList[i]] = data.suggestionList[i];
 						_suggestionList.push(data.suggestionList[i]);
 					}
 				}
-				CKEDITOR.plugins.scayt.suggestions = _suggestionList;
 
+				CKEDITOR.plugins.scayt.suggestions = _suggestionList;
 			});
 
 			_editor.scayt = _scaytInstance;
