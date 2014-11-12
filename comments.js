@@ -14,6 +14,10 @@
  * entries will be listed in the "More Suggestions" sub-menu.
  * Default value : [scayt_maxSuggestions=5]
  *
+ * @property {Number} scayt_minWordLength - The parameter defines minimum length of the words that will be collected from editor's text for spell checking.
+ * Possible value is any positive number.
+ * Default value : [scayt_minWordLength=4]
+ *
  * @property {String} scayt_customerId - The parameter sets the customer ID for SCAYT. Required for migration from free,
  * ad-supported version to paid, ad-free version.
  * Default value : [scayt_customerId='1:WvF0D4-UtPqN1-43nkD4-NKvUm2-daQqk3-LmNiI-z7Ysb4-mwry24-T8YrS3-Q2tpq2'].
@@ -102,6 +106,9 @@
  *
  * // Do not show the suggestions directly.
  * config.scayt_maxSuggestions = 0;
+ * @example
+ * // Set minimum length of the words that will be collected from text.
+ * config.scayt_minWordLength = 5;
  * @example
  * // Load SCAYT using my customer ID.
  * config.scayt_customerId  = 'your-encrypted-customer-id';

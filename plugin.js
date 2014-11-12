@@ -380,6 +380,10 @@ CKEDITOR.plugins.add('scayt', {
 			editor.config.scayt_maxSuggestions = 5;
 		}
 
+		if(editor.config.scayt_minWordLength === undefined || typeof editor.config.scayt_minWordLength != 'number' || editor.config.scayt_minWordLength < 1) {
+			editor.config.scayt_minWordLength = 4;
+		}
+
 		if(editor.config.scayt_customDictionaryIds === undefined || typeof editor.config.scayt_customDictionaryIds !== 'string') {
 			editor.config.scayt_customDictionaryIds = '';
 		}
@@ -776,7 +780,8 @@ CKEDITOR.plugins.scayt = {
 				customer_id			: _editor.config.scayt_customerId,
 				data_attribute_name : self.options.data_attribute_name,
 				misspelled_word_class: self.options.misspelled_word_class,
-				ignoreElementsRegex : _editor.config.scayt_elementsToIgnore
+				ignoreElementsRegex : _editor.config.scayt_elementsToIgnore,
+				minWordLength 		: _editor.config.scayt_minWordLength
 			};
 
 			if(_editor.config.scayt_serviceProtocol) {
