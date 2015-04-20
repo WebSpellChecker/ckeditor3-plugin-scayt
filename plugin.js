@@ -841,14 +841,22 @@ CKEDITOR.plugins.scayt = {
 		editor.fire('scaytButtonState', CKEDITOR.TRISTATE_OFF);
 	},
 	loadScaytLibrary: function(editor, callback) {
-		var self = this;
+		var self = this,
+			date,
+			timestamp,
+			scaytUrl;
 
 		if(typeof window.SCAYT === 'undefined' || typeof window.SCAYT.CKSCAYT !== 'function') {
 			// add onLoad callbacks for editors while SCAYT is loading
 			this.loadingHelper[editor.name] = callback;
 			this.loadingHelper.loadOrder.push(editor.name);
 
-			CKEDITOR.scriptLoader.load(editor.config.scayt_srcUrl, function(success) {
+			//creating unique timestamp for SCAYT URL
+			date = new Date();
+			timestamp = date.getTime();
+			scaytUrl = editor.config.scayt_srcUrl + "?" + timestamp;
+
+			CKEDITOR.scriptLoader.load(scaytUrl, function(success) {
 				var editorName;
 
 				CKEDITOR.fireOnce('scaytReady');
