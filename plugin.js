@@ -229,19 +229,20 @@ CKEDITOR.plugins.add('scayt', {
 		});
 
 		editor.on('beforeCommandExec', function(ev) {
-			var scaytInstance;
+			var scaytInstance = editor.scayt;
 
 			// TODO: after switching in source mode not recreate SCAYT instance, try to just rerun markuping to don't make requests to server
 			if(ev.data.name in plugin.options.disablingCommandExec && editor.mode == 'wysiwyg') {
-				scaytInstance = editor.scayt;
 				if(scaytInstance) {
 					plugin.destroy(editor);
 					editor.fire('scaytButtonState', CKEDITOR.TRISTATE_DISABLED);
 				}
-			} else if(ev.data.name === 'bold' || ev.data.name === 'italic' || ev.data.name === 'underline' || ev.data.name === 'strike' || ev.data.name === 'subscript' || ev.data.name === 'superscript') {
-				scaytInstance = editor.scayt;
+			} else if(	ev.data.name === 'bold' || ev.data.name === 'italic' || ev.data.name === 'underline' ||
+						ev.data.name === 'strike' || ev.data.name === 'subscript' || ev.data.name === 'superscript' ||
+						ev.data.name === 'cut') {
 				if(scaytInstance) {
 					scaytInstance.removeMarkupInSelectionNode();
+
 					setTimeout(function() {
 						scaytInstance.fire('startSpellCheck');
 					}, 0);
