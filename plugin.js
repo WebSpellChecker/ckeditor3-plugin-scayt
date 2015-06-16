@@ -229,7 +229,8 @@ CKEDITOR.plugins.add('scayt', {
 		});
 
 		editor.on('beforeCommandExec', function(ev) {
-			var scaytInstance = editor.scayt;
+			var scaytInstance = editor.scayt,
+				removeMarkupInsideSelection = true;
 
 			// TODO: after switching in source mode not recreate SCAYT instance, try to just rerun markuping to don't make requests to server
 			if(ev.data.name in plugin.options.disablingCommandExec && editor.mode == 'wysiwyg') {
@@ -241,7 +242,10 @@ CKEDITOR.plugins.add('scayt', {
 						ev.data.name === 'strike' || ev.data.name === 'subscript' || ev.data.name === 'superscript' ||
 						ev.data.name === 'cut') {
 				if(scaytInstance) {
-					scaytInstance.removeMarkupInSelectionNode();
+					if(ev.data.name === 'cut') {
+						removeMarkupInsideSelection = false;
+					}
+					scaytInstance.removeMarkupInSelectionNode({removeInside: removeMarkupInsideSelection});
 
 					setTimeout(function() {
 						scaytInstance.fire('startSpellCheck');
