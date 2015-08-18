@@ -341,9 +341,7 @@ CKEDITOR.plugins.add('scayt', {
 
 		// Reload spell-checking for current word after insertion completed.
 		editor.on('insertElement', function() {
-			setTimeout(function() {
-				editor.fire('reloadMarkupScayt');
-			}, 50);
+			editor.fire('reloadMarkupScayt', {removeOptions: {forceBookmark: true}});
 		}, this, null, 50);
 
 		editor.on('insertHtml', function() {
