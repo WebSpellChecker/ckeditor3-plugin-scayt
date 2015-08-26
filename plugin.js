@@ -205,14 +205,6 @@ CKEDITOR.plugins.add('scayt', {
 		var self = this,
 			plugin = CKEDITOR.plugins.scayt;
 
-		CKEDITOR.on('dialogDefinition', function(dialogDefinitionEvent) {
-			var dialogDefinition = dialogDefinitionEvent.data.definition;
-
-			dialogDefinition.dialog.on('cancel', function(cancelEvent) {
-				return false;
-			}, this, null, -1);
-		});
-
 		editor.on('contentDom', function(ev) {
 			// The event is fired when editable iframe node was reinited so we should restart our service
 			if(plugin.state[editor.name] && !editor.readOnly) {
@@ -249,14 +241,14 @@ CKEDITOR.plugins.add('scayt', {
 						// Otherwise we will get issues with cutting text via context menu.
 						forceBookmark = true;
 					}
-					scaytInstance.removeMarkupInSelectionNode({
-						removeInside: removeMarkupInsideSelection,
-						forceBookmark: forceBookmark
-					});
 
-					setTimeout(function() {
-						scaytInstance.fire('startSpellCheck');
-					}, 0);
+					editor.fire('reloadMarkupScayt', {
+						removeOptions: {
+							removeInside: removeMarkupInsideSelection,
+							forceBookmark: forceBookmark
+						},
+						timeout: 0
+					});
 				}
 			}
 		});
@@ -330,34 +322,34 @@ CKEDITOR.plugins.add('scayt', {
 			}
 		}, this, null, 50);
 
-		// Reload spell-checking for current word after insertion completed.
-		editor.on('insertElement', function() {
-			var scaytInstance = editor.scayt;
+		editor.on('reloadMarkupScayt', function(ev) {
+			var scaytInstance = editor.scayt,
+				removeOptions = ev.data && ev.data.removeOptions,
+				timeout = ev.data && ev.data.timeout;
 
-			setTimeout(function() {
-				if(scaytInstance) {
-					scaytInstance.removeMarkupInSelectionNode();
+			if (scaytInstance) {
+				scaytInstance.removeMarkupInSelectionNode(removeOptions);
+				if(typeof timeout === 'number') {
+					setTimeout(function() {
+						scaytInstance.fire('startSpellCheck');
+					}, timeout);
+				} else {
 					scaytInstance.fire('startSpellCheck');
 				}
-			}, 50);
+			}
+		});
+
+		// Reload spell-checking for current word after insertion completed.
+		editor.on('insertElement', function() {
+			editor.fire('reloadMarkupScayt', {removeOptions: {forceBookmark: true}});
 		}, this, null, 50);
 
 		editor.on('insertHtml', function() {
-			var scaytInstance = editor.scayt;
-
-			if(scaytInstance) {
-				scaytInstance.removeMarkupInSelectionNode();
-				scaytInstance.fire('startSpellCheck');
-			}
+			editor.fire('reloadMarkupScayt');
 		}, this, null, 50);
 
 		editor.on('insertText', function() {
-			var scaytInstance = editor.scayt;
-
-			if(scaytInstance) {
-				scaytInstance.removeMarkupInSelectionNode();
-				scaytInstance.fire('startSpellCheck');
-			}
+			editor.fire('reloadMarkupScayt');
 		}, this, null, 50);
 
 		// The event is listening to open necessary dialog tab
@@ -895,6 +887,36 @@ CKEDITOR.plugins.scayt = {
 		}
 	}
 };
+
+CKEDITOR.on('dialogDefinition', function(dialogDefinitionEvent) {
+	var dialogName = dialogDefinitionEvent.data.name,
+		dialogDefinition = dialogDefinitionEvent.data.definition,
+		dialog = dialogDefinition.dialog;
+
+	if (dialogName === 'scaytDialog') {
+		dialog.on('cancel', function(cancelEvent) {
+			return false;
+		}, this, null, -1);
+	}
+
+	if (dialogName === 'link') {
+		dialog.on('ok', function(okEvent) {
+			var editor = okEvent.sender && okEvent.sender.getParentEditor();
+
+			if(editor) {
+				setTimeout(function() {
+					editor.fire('reloadMarkupScayt', {
+						removeOptions: {
+							removeInside: true,
+							forceBookmark: true
+						},
+						timeout: 0
+					});
+				}, 0);
+			}
+		});
+	}
+});
 
 CKEDITOR.on('scaytReady', function() {
 	// Override editor.checkDirty method avoid CK checkDirty functionality to fix SCAYT issues with incorrect checkDirty behavior.
