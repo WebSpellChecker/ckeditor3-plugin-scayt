@@ -23,6 +23,17 @@
  * Default value : [scayt_customerId='1:WvF0D4-UtPqN1-43nkD4-NKvUm2-daQqk3-LmNiI-z7Ysb4-mwry24-T8YrS3-Q2tpq2'].
  * Old option name : scayt_customerid
  *
+ * @property {String|Array} scayt_disableOptionsStorage - disabling of SCAYT Options storing.
+ * Default value : [scayt_disableOptionsStorage =''].
+ * Possible values are:
+ * "options"
+ * "ignore-all-caps-words"
+ * "ignore-domain-names"
+ * "ignore-words-with-mixed-cases"
+ * "ignore-words-with-numbers"
+ * "lang"
+ * "all"
+ *
  * @property {String} scayt_moreSuggestions - The parameter enables/disables the "More Suggestions" sub-menu in the context menu.
  * Possible values are 'on' and 'off'.
  * Default value : [scayt_moreSuggestions='on']
@@ -112,6 +123,11 @@
  * @example
  * // Load SCAYT using my customer ID.
  * config.scayt_customerId  = 'your-encrypted-customer-id';
+ * @example
+ * // To disable storage of all options. String for one parameter transfer.
+ * config.scayt_disableOptionsStorage = "all";
+ * // To disable several options. Array for several parameters transfer.
+ * config.scayt_disableOptionsStorage = ['lang', 'ignore-all-caps-words', 'ignore-words-with-mixed-cases']
  * @example
  * // Disables the "More Suggestions" sub-menu.
  * config.scayt_moreSuggestions = 'off';
