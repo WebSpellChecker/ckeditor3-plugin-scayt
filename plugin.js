@@ -278,7 +278,7 @@ CKEDITOR.plugins.add('scayt', {
 				scaytInstance = editor.scayt;
 				if(scaytInstance) {
 					setTimeout(function() {
-						scaytInstance.fire('startSpellCheck');
+						scaytInstance.reloadMarkup();
 					}, 250);
 				}
 			}
@@ -301,7 +301,7 @@ CKEDITOR.plugins.add('scayt', {
 					}
 				} else {
 					if(scaytInstance) {
-						scaytInstance.fire('startSpellCheck');
+						scaytInstance.reloadMarkup();
 					} else if(ev.editor.mode == 'wysiwyg' && plugin.state[ev.editor.name]) {
 						setTimeout(function() {
 							plugin.createScayt(ev.editor);
@@ -331,10 +331,10 @@ CKEDITOR.plugins.add('scayt', {
 				scaytInstance.removeMarkupInSelectionNode(removeOptions);
 				if(typeof timeout === 'number') {
 					setTimeout(function() {
-						scaytInstance.fire('startSpellCheck');
+						scaytInstance.reloadMarkup();
 					}, timeout);
 				} else {
-					scaytInstance.fire('startSpellCheck');
+					scaytInstance.reloadMarkup();
 				}
 			}
 		});
