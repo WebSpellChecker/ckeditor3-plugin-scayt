@@ -278,7 +278,7 @@ CKEDITOR.plugins.add('scayt', {
 				scaytInstance = editor.scayt;
 				if(scaytInstance) {
 					setTimeout(function() {
-						scaytInstance.reloadMarkup();
+						plugin.reloadMarkup(scaytInstance);
 					}, 250);
 				}
 			}
@@ -301,7 +301,7 @@ CKEDITOR.plugins.add('scayt', {
 					}
 				} else {
 					if(scaytInstance) {
-						scaytInstance.reloadMarkup();
+						plugin.reloadMarkup(scaytInstance);
 					} else if(ev.editor.mode == 'wysiwyg' && plugin.state[ev.editor.name]) {
 						setTimeout(function() {
 							plugin.createScayt(ev.editor);
@@ -331,10 +331,10 @@ CKEDITOR.plugins.add('scayt', {
 				scaytInstance.removeMarkupInSelectionNode(removeOptions);
 				if(typeof timeout === 'number') {
 					setTimeout(function() {
-						scaytInstance.reloadMarkup();
+						plugin.reloadMarkup(scaytInstance);
 					}, timeout);
 				} else {
-					scaytInstance.reloadMarkup();
+					plugin.reloadMarkup(scaytInstance);
 				}
 			}
 		});
@@ -796,6 +796,16 @@ CKEDITOR.plugins.scayt = {
 		'scayt_service_port'	: 'scayt_servicePort',
 		'scayt_service_path'	: 'scayt_servicePath',
 		'scayt_customerid'		: 'scayt_customerId'
+	},
+	// backward compatibility if version of scayt app < 4.8.3
+	reloadMarkup: function(scaytInstance) {
+		if (scaytInstance.reloadMarkup) {
+			scaytInstance.reloadMarkup();
+		} else {
+			console.warn('Note: you are using new version of SCAYT plug-in. It is recommended to upgrade WebSpellChecker.net to version 4.8.3 Contact us: '+
+					'https://www.webspellchecker.net/contact-us.html');
+			scaytInstance.fire('startSpellCheck');
+		}
 	},
 	replaceOldOptionsNames: function(config) {
 		for(var key in config) {
