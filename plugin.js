@@ -780,6 +780,7 @@ CKEDITOR.plugins.scayt = {
 	loadingHelper: {
 		loadOrder: []
 	},
+	warningCounter: 0,
 	isLoading: false,
 	options: {
 		disablingCommandExec: {
@@ -800,11 +801,14 @@ CKEDITOR.plugins.scayt = {
 	// backward compatibility if version of scayt app < 4.8.3
 	reloadMarkup: function(scaytInstance) {
 		if(scaytInstance){
-			if (scaytInstance.reloadMarkup) {
+			if(scaytInstance.reloadMarkup) {
 				scaytInstance.reloadMarkup();
 			} else {
-				console.warn('Note: You are using latest version of SCAYT plug-in. It is recommended to upgrade WebSpellChecker.net application to version v4.8.3.' +
-						'Contact us by e-mail at support@webspellchecker.net.');
+				if(this.warningCounter < 5){
+					console.warn('Note: You are using latest version of SCAYT plug-in. It is recommended to upgrade WebSpellChecker.net application to version v4.8.3.' +
+							'Contact us by e-mail at support@webspellchecker.net.');
+					this.warningCounter += 1;
+				}
 				scaytInstance.fire('startSpellCheck');
 			}
 		}
